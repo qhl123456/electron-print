@@ -1,21 +1,50 @@
 {
-  "name": "hello-electron",
-  "version": "0.1.0",
+  "name": "printing-component",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "serve": "vue-cli-service electron:serve",
+    "lint": "vue-cli-service lint",
+    "dev": "cross-env VUE_APP_FEED_URL=http://ntmag.yshlw.com vue-cli-service electron:serve",
+    "build:dev": "npm run prebuild && cross-env VUE_APP_FEED_URL=http://ntmag.yshlw.com vue-cli-service electron:build",
+    "build:pro": "npm run prebuild && cross-env VUE_APP_FEED_URL=http://mag.xxllps.net vue-cli-service electron:build",
+    "build:lianku": "npm run prebuild && cross-env VUE_APP_FEED_URL=http://120.78.160.132:28901 vue-cli-service electron:build",
+    "postinstall": "electron-builder install-app-deps",
+    "postuninstall": "electron-builder install-app-deps",
+    "prebuild": "IF EXIST dist_electron (rmdir /s /q dist_electron)"
   },
+  "main": "background.js",
   "dependencies": {
+    "bufferutil": "^4.0.7",
     "core-js": "^3.8.3",
+    "dayjs": "^1.11.8",
+    "electron": "^20.3.12",
+    "electron-updater": "^6.1.1",
+    "electron-win-state": "^1.1.22",
+    "socket.io": "^4.7.1",
+    "utf-8-validate": "^5.0.10",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
-    "vuex": "^4.0.0"
+    "vuex": "^4.0.0",
+    "ws": "^8.13.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.12.16",
+    "@babel/eslint-parser": "^7.12.16",
     "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
     "@vue/cli-plugin-vuex": "~5.0.0",
-    "@vue/cli-service": "~5.0.0"
+    "@vue/cli-service": "~5.0.0",
+    "cross-env": "^7.0.3",
+    "electron-devtools-installer": "^3.1.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-vue": "^8.0.3",
+    "less": "^4.0.0",
+    "less-loader": "^8.0.0",
+    "prettier": "^2.4.1",
+    "vue-cli-plugin-electron-builder": "~2.1.1"
   }
 }
