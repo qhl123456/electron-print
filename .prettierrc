@@ -1,0 +1,7 @@
+{
+  "printWidth": 1200,
+  "semi": false,
+  "singleQuote": true,
+  "endOfLine": "auto",
+  "formatOnSave": "auto"
+}

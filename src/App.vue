@@ -3,7 +3,9 @@
 </template>
 
 <script setup>
-import renderer from "./views/renderer.vue";
+import renderer from './views/renderer.vue'
 </script>
 
-<style></style>
+<style>
+@import './style/global.less';
+</style>
