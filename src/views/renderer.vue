@@ -21,10 +21,6 @@ import { ipcRenderer } from 'electron'
 
 const store = useStore()
 
-onMounted(async () => {
-  await store.dispatch('getPrintList')
-})
-
 const systemPrintList = computed(() => store.state.common.systemPrintList)
 
 /**
@@ -45,6 +41,15 @@ const handlePrint = () => {
   }
   ipcRenderer.send('handle_print', printInfo)
 }
+
+onMounted(async () => {
+  await store.dispatch('getPrintList')
+
+  /**监听主进程发送的刷新打印机列表事件 */
+  ipcRenderer.on('refreshPrintList', (e, data) => {
+    store.dispatch('getPrintList', true)
+  })
+})
 </script>
 
 <style lang="less" scoped>

@@ -1,7 +1,7 @@
 'use strict'
 
 import { app, protocol, BrowserWindow } from 'electron'
-import winState from 'electron-win-state'
+import WinState from 'electron-win-state'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 
 import electronService from './electron-service'
@@ -11,6 +11,10 @@ protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: tru
 
 // 通过检查第二个实例启动时的事件来避免多个实例运行
 const gotTheLock = app.requestSingleInstanceLock()
+const winState = new WinState({
+  defaultWidth: 1000,
+  defaultHeight: 800,
+})
 
 let win
 
@@ -33,7 +37,7 @@ async function createWindow() {
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-    if (!process.env.IS_TEST) win.webContents.openDevTools()
+    // if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
     createProtocol('app')
     // Load the index.html when not in development

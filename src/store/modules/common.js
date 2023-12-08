@@ -19,9 +19,10 @@ export default {
   actions: {
     /**
      * @method 获取系统打印机
+     * @param isShowMessage 是否需要提示语句
      */
-    async getPrintList({ commit }, data) {
-      const printList = await ipcRenderer.invoke('getPrintList')
+    async getPrintList({ commit }, isShowMessage = false) {
+      const printList = await ipcRenderer.invoke('getPrintList', isShowMessage)
       printList.forEach((item) => {
         // isDefault为true的话就代表当前打印机是默认打印机
         item.isActive = item.isDefault
