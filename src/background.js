@@ -1,6 +1,7 @@
 'use strict'
 
 import { app, protocol, BrowserWindow } from 'electron'
+import path from 'path'
 import WinState from 'electron-win-state'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 
@@ -92,6 +93,7 @@ app.on('ready', async () => {
  * @method 初始化electron事件
  */
 function electronInit() {
+  process.env.WEBPACK_DEV_SERVER_URL && win.setIcon(path.join(__dirname, `../public/favicon.png`))
   const print = new electronService.Print(win)
   electronService.initPrintList(win, print)
 }
