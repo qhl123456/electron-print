@@ -1,5 +1,7 @@
 import { ipcMain, dialog } from 'electron'
 import { initMenuList } from '../mainMenu/index'
+const fs = require('fs')
+const path = require('path')
 
 export const initPrintList = (win, print) => {
   /**
@@ -17,6 +19,31 @@ export const initPrintList = (win, print) => {
       return list
     } catch (error) {
       console.log('获取打印机列表-error', error)
+    }
+  })
+}
+
+export const initFilePaths = () => {
+  ipcMain.handle('getPathFiles', (event, inputPath) => {
+    try {
+      const fileList = fs.readdirSync(inputPath)
+      // 过滤出.json文件
+      const jsonFiles = fileList.filter((file) => path.extname(file).toLowerCase() === '.json')
+      const fullPaths = jsonFiles.map((file) => path.join(inputPath, file))
+      return fullPaths
+    } catch (error) {
+      console.log('error', error)
+      return []
+    }
+  })
+
+  ipcMain.handle('getFileInfo', (event, filePath) => {
+    try {
+      const fileInfo = fs.readFileSync(filePath, 'utf-8')
+      return fileInfo
+    } catch (error) {
+      console.log('error', error)
+      return {}
     }
   })
 }

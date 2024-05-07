@@ -94,6 +94,7 @@ app.on('ready', async () => {
  */
 function electronInit() {
   process.env.WEBPACK_DEV_SERVER_URL && win.setIcon(path.join(__dirname, `../public/favicon.png`))
+  electronService.initFilePaths()
   const print = new electronService.Print(win)
   electronService.initPrintList(win, print)
 }

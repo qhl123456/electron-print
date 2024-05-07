@@ -1,5 +1,6 @@
 <template>
   <div class="main">
+    <input type="text" placeholder="请输入" @input="handleInput" style="width: 100%" />
     <div class="main-header">
       <div v-for="item in systemPrintList" :key="item.name">
         <div :class="['p-x-10', item.isActive ? 'header-active' : 'header-max']" @click="setActiveItem(item)">
@@ -8,13 +9,29 @@
       </div>
     </div>
 
+    <div class="main-file">
+      <template v-for="(item, index) in fileList">
+        <div style="width: 100%" :class="['p-x-10', currentIndex === index ? 'header-active' : 'header-max']" @click="currentIndex = index">
+          {{ item }}
+        </div>
+      </template>
+    </div>
+
     <div class="main-footer">
+      <button @click="handleConfirm">确认</button>
       <button @click="handlePrint">打印</button>
+      <button @click="handleDeleteTask">清空打印队列</button>
+    </div>
+
+    读取的json文件
+    <div>
+      {{ fileInfo }}
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { onMounted, computed } from 'vue'
 import { ipcRenderer } from 'electron'
@@ -22,6 +39,10 @@ import { ipcRenderer } from 'electron'
 const store = useStore()
 
 const systemPrintList = computed(() => store.state.common.systemPrintList)
+
+const fileList = computed(() => store.state.common.fileList)
+const fileInfo = computed(() => store.state.common.fileInfo)
+const currentIndex = ref(0)
 
 /**
  * @method 设置当前活跃打印机
@@ -35,11 +56,14 @@ const setActiveItem = (item) => {
 
 const handlePrint = () => {
   const printInfo = {
-    htmlText:
-      '<!doctype html><html lang=\'en\'><head><meta charset=\'utf-8\'><title>打印</title><style>*{box-sizing: border-box;}   td{ word-break: break-all;}</style></head><body><div style=\'position: relative;width: 100%;height: 100%\'><div style=\'width:100%;min-height:25px;display:flex;flex-wrap:wrap;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\'><div style=\'display:block;word-break: break-all;flex: 0 0 33.33333336%;\'></div><div style=\'display:block;word-break: break-all;flex: 0 0 33.33333336%;\'><div style=\'font-size:18px;font-weight:normal;text-align:center;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\'>粤十-库存过户单</div></div><div style=\'display:block;word-break: break-all;flex: 0 0 33.33333336%;\'><div style=\'text-align:justify-start\'><img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAA8CAIAAABTvhANAAABKUlEQVR42u3TQQqAIBBA0bn/pQ0MShzHFq2E91dhZlq8aCcUvfviGdlPyNf51nLyuNT4VB6MoekV02rVs9VgddK8ybxCtbH8AX8eM+9hufJywueJpp+7WW3zBdohBYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIoCUIJQkkQShBKglCCUBKEEoSSIJQglAShBKEkCCUIJUEoQSgJQglCSRBKEEqCUIJQEoQShJLeLiIpS/zZp3V9AAAAAElFTkSuQmCC style=\'width:273px;height:70px;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\' /></div><div style=\'font-size:12px;font-weight:normal;text-align:center;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\'>GH-20230914-000005</div></div></div><div style=\'width:100%;min-height:25px;display:flex;flex-wrap:wrap;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\'><div style=\'display:block;word-break: break-all;flex: 0 0 50.000000039999996%;\'><div style=\'font-size:15px;font-weight:normal;text-align:left;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\'>过户单号：GH-20230914-000005</div><div style=\'font-size:15px;font-weight:normal;text-align:left;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\'>原货主：非标测试货主</div></div><div style=\'display:block;word-break: break-all;flex: 0 0 50.000000039999996%;\'><div style=\'font-size:15px;font-weight:normal;text-align:left;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\'>过户时间：</div><div style=\'font-size:15px;font-weight:normal;text-align:left;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\'>新货主：企业系统企业货主7</div></div></div><div style=\'margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\'><table borderCollapse="collapse" border="none" style=\'font-size:15px;border-collapse:collapse;width:100%\'><thead><tr style=\'white-space: pre-wrap;\'><td style="border: solid #000 1px;height: undefinedpx;width: 30px; text-align: undefined">序号</td><td style="border: solid #000 1px;height: undefinedpx;width: 30px; text-align: undefined">商品名称</td><td style="border: solid #000 1px;height: undefinedpx;width: 30px; text-align: undefined">批次号</td><td style="border: solid #000 1px;height: undefinedpx;width: 30px; text-align: undefined">过户数量</td><td style="border: solid #000 1px;height: undefinedpx;width: 30px; text-align: undefined">库存数量</td><td style="border: solid #000 1px;height: undefinedpx;width: 30px; text-align: undefined">库存重量</td><td style="border: solid #000 1px;height: undefinedpx;width: 30px; text-align: undefined">过户重量</td><td style="border: solid #000 1px;height: undefinedpx;width: 30px; text-align: undefined">分配数量</td><td style="border: solid #000 1px;height: undefinedpx;width: 30px; text-align: undefined">可用数量</td><td style="border: solid #000 1px;height: undefinedpx;width: 30px; text-align: undefined">生产日期</td><td style="border: solid #000 1px;height: undefinedpx;width: 30px; text-align: undefined">失效日期</td><td style="border: solid #000 1px;height: undefinedpx;width: 30px; text-align: undefined">物料号</td><td style="border: solid #000 1px;height: undefinedpx;width: 30px; text-align: undefined">托盘号</td></tr></thead><tbody><tr style=\'height: undefinedpx;white-space: pre-wrap\'><td style="border: solid #000 1px; text-align: undefined">1</td><td style="border: solid #000 1px; text-align: undefined">高粱酒</td><td style="border: solid #000 1px; text-align: undefined">#000694</td><td style="border: solid #000 1px; text-align: undefined">2</td><td style="border: solid #000 1px; text-align: undefined">2</td><td style="border: solid #000 1px; text-align: undefined">2</td><td style="border: solid #000 1px; text-align: undefined">2</td><td style="border: solid #000 1px; text-align: undefined">0</td><td style="border: solid #000 1px; text-align: undefined">2</td><td style="border: solid #000 1px; text-align: undefined"></td><td style="border: solid #000 1px; text-align: undefined"></td><td style="border: solid #000 1px; text-align: undefined"></td><td style="border: solid #000 1px; text-align: undefined">TP202309134723</td></tr><tr style=\'height: undefinedpx;white-space: pre-wrap\'><td style="border: solid #000 1px; text-align: undefined">2</td><td style="border: solid #000 1px; text-align: undefined">150克冰袋，130个/框</td><td style="border: solid #000 1px; text-align: undefined">#000700</td><td style="border: solid #000 1px; text-align: undefined">33</td><td style="border: solid #000 1px; text-align: undefined">33</td><td style="border: solid #000 1px; text-align: undefined">643.5</td><td style="border: solid #000 1px; text-align: undefined">643.5</td><td style="border: solid #000 1px; text-align: undefined">0</td><td style="border: solid #000 1px; text-align: undefined">33</td><td style="border: solid #000 1px; text-align: undefined"></td><td style="border: solid #000 1px; text-align: undefined"></td><td style="border: solid #000 1px; text-align: undefined"></td><td style="border: solid #000 1px; text-align: undefined">TP202309144826</td></tr><tr style=\'height: undefinedpx;white-space: pre-wrap\'><td style="border: solid #000 1px; text-align: undefined"></td><td style="border: solid #000 1px; text-align: undefined"></td><td style="border: solid #000 1px; text-align: undefined">合计</td><td style="border: solid #000 1px; text-align: undefined">35</td><td style="border: solid #000 1px; text-align: undefined">35</td><td style="border: solid #000 1px; text-align: undefined">645.5</td><td style="border: solid #000 1px; text-align: undefined">645.5</td><td style="border: solid #000 1px; text-align: undefined"></td><td style="border: solid #000 1px; text-align: undefined"></td><td style="border: solid #000 1px; text-align: undefined"></td><td style="border: solid #000 1px; text-align: undefined"></td><td style="border: solid #000 1px; text-align: undefined"></td><td style="border: solid #000 1px; text-align: undefined"></td></tr></tbody></table></div><div style=\'font-size:15px;font-weight:normal;text-align:left;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:30px;\'>备注：</div><div style=\'width:100%;min-height:25px;display:flex;flex-wrap:wrap;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\'><div style=\'display:block;word-break: break-all;flex: 0 0 33.33333336%;\'><div style=\'font-size:15px;font-weight:normal;text-align:left;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\'>过户件数：45</div></div><div style=\'display:block;word-break: break-all;flex: 0 0 33.33333336%;\'><div style=\'font-size:15px;font-weight:normal;text-align:left;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\'>过户重量：840.5</div></div><div style=\'display:block;word-break: break-all;flex: 0 0 33.33333336%;\'><div style=\'font-size:15px;font-weight:normal;text-align:left;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\'>过户体积：0</div></div></div><div style=\'width:100%;min-height:25px;display:flex;flex-wrap:wrap;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\'><div style=\'display:block;word-break: break-all;flex: 0 0 25.000000019999998%;\'><div style=\'font-size:15px;font-weight:normal;text-align:left;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\'>审核人：</div><div style=\'font-size:15px;font-weight:normal;text-align:left;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\'>创建人：潇哥哥</div></div><div style=\'display:block;word-break: break-all;flex: 0 0 25.000000019999998%;\'><div style=\'font-size:15px;font-weight:normal;text-align:left;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\'>主管：</div></div><div style=\'display:block;word-break: break-all;flex: 0 0 25.000000019999998%;\'><div style=\'font-size:15px;font-weight:normal;text-align:left;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\'>原货主：非标测试货主</div></div><div style=\'display:block;word-break: break-all;flex: 0 0 25.000000019999998%;\'><div style=\'font-size:15px;font-weight:normal;text-align:left;margin-left:0px;margin-right:0px;margin-Top:0px;margin-bottom:1px;\'>新货主：企业系统企业货主7</div></div></div></div></body></html>',
+    htmlText: '<!DOCTYPE html><html><head><title>HTML Table Example</title></head><body><h1>Example Table</h1><table border="1"><thead><tr><th>Name</th><th>Age</th><th>Occupation</th></tr></thead><tbody><tr><td>John Doe</td><td>30</td><td>Engineer</td></tr><tr><td>Jane Smith</td><td>25</td><td>Teacher</td></tr><tr><td>Michael Johnson</td><td>40</td><td>Doctor</td></tr></tbody></table></body></html>',
     deviceName: systemPrintList.value.find((item) => item.isActive)?.name || '',
   }
   ipcRenderer.send('handle_print', printInfo)
+}
+
+const handleDeleteTask = () => {
+  ipcRenderer.send('delete_print_task')
 }
 
 onMounted(async () => {
@@ -50,6 +74,15 @@ onMounted(async () => {
     store.dispatch('getPrintList', true)
   })
 })
+
+const handleConfirm = () => {
+  console.log(fileList.value[currentIndex.value])
+  store.dispatch('getFileInfo', fileList.value[currentIndex.value])
+}
+
+const handleInput = async (e) => {
+  store.dispatch('getFileList', e.target.value)
+}
 </script>
 
 <style lang="less" scoped>
@@ -129,5 +162,14 @@ onMounted(async () => {
 
 .p-x-10 {
   padding: 0 10px;
+}
+.header-active {
+  background-color: #fff;
+}
+.main-file {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
 }
 </style>

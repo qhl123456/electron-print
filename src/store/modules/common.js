@@ -5,6 +5,8 @@ export default {
   state: {
     /**系统打印机列表 */
     systemPrintList: [],
+    fileList: [],
+    fileInfo: {},
   },
   getters: {},
   mutations: {
@@ -13,7 +15,13 @@ export default {
      */
     [constance.SET_SYSTEM_PRINT_LIST](state, printList) {
       state.systemPrintList = printList
-      console.log('printList', printList)
+    },
+
+    SET_FILE_LIST(state, fileList) {
+      state.fileList = fileList
+    },
+    SET_FILE_INFO(state, fileInfo) {
+      state.fileInfo = fileInfo
     },
   },
   actions: {
@@ -28,6 +36,16 @@ export default {
         item.isActive = item.isDefault
       })
       commit(constance.SET_SYSTEM_PRINT_LIST, printList)
+    },
+
+    async getFileList({ commit }, path = '') {
+      const fileList = await ipcRenderer.invoke('getPathFiles', path)
+      commit('SET_FILE_LIST', fileList)
+    },
+
+    async getFileInfo({ commit }, path = '') {
+      const fileInfo = await ipcRenderer.invoke('getFileInfo', path)
+      commit('SET_FILE_INFO', fileInfo)
     },
   },
 }
